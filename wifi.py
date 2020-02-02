@@ -46,8 +46,8 @@ class TryAgain(Logging):
             coded by @dyegocaldeira
         ''')
         
-        # os.system("sudo airmon-ng check kill &> /dev/null")
-        
+        f = os.popen("sudo airmon-ng check kill &> /dev/null")
+
         self.validateSudo()
         self.checkInet()
         self.checkDependencies()
@@ -206,11 +206,13 @@ class TryAgain(Logging):
                 
                 if countCracked == 0:
                     self.log('Sorry, no Vivo network found', 'WARNING')
+                    cmd="sudo airmon-ng stop {inet} &> /dev/null".format(inet=self.args['interface'])
+                    f = os.popen(cmd)
+                    time.sleep(2)
+
             finally:
 
-                # os.system("sudo systemctl restart network-manager &> /dev/null")
-                stopMonCmd="sudo airmon-ng stop " + self.args['interface'] +  "&> /dev/null"
-                f = os.popen(stopMonCmd)
+                os.system("sudo systemctl restart network-manager &> /dev/null")
                 print('\n')
                 csvFile.close()
 
@@ -220,8 +222,9 @@ class TryAgain(Logging):
         self.log('Restarting network-manager')
         self.log('Stopping monitor interface')
 
-        # os.system("sudo systemctl restart network-manager &> /dev/null")
-        stopMonCmd="sudo airmon-ng stop " + self.args['interface'] +  "&> /dev/null"
+        os.system("sudo systemctl restart network-manager &> /dev/null")
+        time.sleep(2)
+        stopMonCmd="sudo airmon-ng stop {inet} &> /dev/null".format(inet=self.args['interface'])
         f = os.popen(stopMonCmd)
         print('\n')
         
